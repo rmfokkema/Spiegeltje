@@ -1,0 +1,4 @@
+CFBundleName 								= "Miroir";
+CFBundleDisplayName 						= "Miroir";
+NSCameraUsageDescription				= "Pour que vous puissez vous voir.";
+NSPhotoLibraryAddUsageDescription	= "Pour ajouter des selfies.";

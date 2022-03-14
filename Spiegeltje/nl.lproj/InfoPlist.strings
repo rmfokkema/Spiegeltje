@@ -1,0 +1,4 @@
+CFBundleName 								= "Spiegel";
+CFBundleDisplayName 						= "Spiegel";
+NSCameraUsageDescription				= "Dan kun jezelf te zien.";
+NSPhotoLibraryAddUsageDescription	= "Om selfies op te slaan.";

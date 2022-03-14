@@ -1,0 +1,4 @@
+CFBundleName 								= "Espejo";
+CFBundleDisplayName 						= "Espejo";
+NSCameraUsageDescription				= "Para que puedas verte a ti mismo.";
+NSPhotoLibraryAddUsageDescription	= "Para agregar selfies.";
