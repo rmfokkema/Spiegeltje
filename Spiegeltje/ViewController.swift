@@ -7,7 +7,6 @@
 
 import UIKit
 import AVFoundation
-// import Photos
 import CoreGraphics
 
 class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
@@ -44,7 +43,9 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 	  var blurView: UIVisualEffectView!
 
 	  private var holdToCapturePhoto: UILongPressGestureRecognizer!
+	  private var holdToCapturePhotoAdded = false
 	  private var doubleTapToFlipImage: UITapGestureRecognizer!
+	  private var doubleTapToFlipImageAdded = false
 
 	  override func viewDidLoad() {
 			 super.viewDidLoad()
@@ -59,14 +60,8 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 view.addSubview(blurView)
 
 			 AVCaptureDevice.requestAccess(for: .video) { granted in
-					if granted {
-						  DispatchQueue.main.async {
-								 self.authorizeCameraLabel.isHidden = true
-						  }
-						  self.frontSessionQueue.async {
-								 self.configureSession()
-						  }
-					}
+					if granted { DispatchQueue.main.async { self.authorizeCameraLabel.isHidden = true }
+						  self.frontSessionQueue.async { self.configureSession() }}
 			 }
 
 			 photoOutput.isHighResolutionCaptureEnabled = true
@@ -74,40 +69,41 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 setNeedsStatusBarAppearanceUpdate()
 			 setNeedsUpdateOfHomeIndicatorAutoHidden()
 
+			 holdToCapturePhoto = UILongPressGestureRecognizer(target: self, action: #selector(capturePhoto))
+			 doubleTapToFlipImage = UITapGestureRecognizer(target: self, action: #selector(flipView))
+
 			 checkSettings()
 	  }
 
 	  func checkSettings() {
 
-			 holdToCapturePhoto = UILongPressGestureRecognizer(target: self, action: #selector(capturePhoto))
-			 doubleTapToFlipImage = UITapGestureRecognizer(target: self, action: #selector(flipView))
-
 			 if UserDefaults.standard.bool(forKey: "selfies_enabled") {
-					holdToCapturePhoto.require(toFail: doubleTapToFlipImage)
-					view.addGestureRecognizer(holdToCapturePhoto)
+					if !holdToCapturePhotoAdded {
+						  holdToCapturePhoto.numberOfTouchesRequired = 1
+						  view.addGestureRecognizer(holdToCapturePhoto)
+						  holdToCapturePhotoAdded = true
+					}
 			 } else { view.removeGestureRecognizer(holdToCapturePhoto) }
 
 			 if UserDefaults.standard.bool(forKey: "flip_enabled") {
-					doubleTapToFlipImage!.numberOfTapsRequired = 2
-					view.addGestureRecognizer(doubleTapToFlipImage)
+					if !doubleTapToFlipImageAdded {
+						  doubleTapToFlipImage!.numberOfTapsRequired = 2
+						  view.addGestureRecognizer(doubleTapToFlipImage)
+						  doubleTapToFlipImageAdded = true
+					}
 			 } else { view.removeGestureRecognizer(doubleTapToFlipImage) }
 	  }
 
 	  @objc private func flipView() {
-			 // view.transform = viewIsFlipped ? CGAffineTransform(scaleX: 1, y: 1) : CGAffineTransform(scaleX: -1, y: 1)
-
-			 view.transform = CGAffineTransform(scaleX: -1, y: 1)
-
-			 // viewIsFlipped = viewIsFlipped ? false : true
+			 view.transform = viewIsFlipped ? CGAffineTransform(scaleX: 1, y: 1) : CGAffineTransform(scaleX: -1, y: 1)
+			 viewIsFlipped = viewIsFlipped ? false : true
 	  }
 
 	  @objc private func capturePhoto(_ sender: UILongPressGestureRecognizer!) {
+
 			 if sender.state == .began {
-
 					UIImpactFeedbackGenerator(style: .light).impactOccurred()
-					
 					photoOutput.capturePhoto(with: AVCapturePhotoSettings(), delegate: self)
-
 					snapView.alpha = 0.9
 					UIView.animate(withDuration: 0.3, animations: {
 						  self.snapView.alpha = 0.0
@@ -122,7 +118,6 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 let uiImage = UIImage(cgImage: image, scale: 1.0, orientation: (viewIsFlipped ? .right : .leftMirrored))
 			 UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
 	  }
-
 
 	  private func configureSession() {
 
@@ -151,11 +146,11 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 }
 
 			 session.connections.first?.automaticallyAdjustsVideoMirroring = false
-
 			 session.commitConfiguration()
 	  }
 
 	  override func viewWillAppear(_ animated: Bool) {
+
 			 super.viewWillAppear(animated)
 			 if self.setupResult != .success { return }
 
@@ -172,7 +167,7 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 if !animated {
 					blurView.alpha = blur ? 1 : 0
 			 } else {
-					UIView.animate(withDuration: 0.84, animations: {
+					UIView.animate(withDuration: 0.53, animations: {
 						  self.blurView.alpha =	blur ? 1 : 0
 					})
 			 }
