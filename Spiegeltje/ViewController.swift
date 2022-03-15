@@ -42,7 +42,9 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 	  private var viewIsFlipped: Bool = false
 
 	  var blurView: UIVisualEffectView!
+
 	  private var holdToCapturePhoto: UILongPressGestureRecognizer!
+	  private var doubleTapToFlipImage: UITapGestureRecognizer!
 
 	  override func viewDidLoad() {
 			 super.viewDidLoad()
@@ -56,44 +58,47 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 blurView.alpha = 0.0
 			 view.addSubview(blurView)
 
-					AVCaptureDevice.requestAccess(for: .video) { granted in
-						  if granted {
-								 DispatchQueue.main.async {
-										self.authorizeCameraLabel.isHidden = true
-								 }
-								 self.frontSessionQueue.async {
-										self.configureSession()
-								 }
+			 AVCaptureDevice.requestAccess(for: .video) { granted in
+					if granted {
+						  DispatchQueue.main.async {
+								 self.authorizeCameraLabel.isHidden = true
+						  }
+						  self.frontSessionQueue.async {
+								 self.configureSession()
 						  }
 					}
+			 }
 
 			 photoOutput.isHighResolutionCaptureEnabled = true
-
-			 holdToCapturePhoto = UILongPressGestureRecognizer(target: self, action: #selector(capturePhoto))
 
 			 setNeedsStatusBarAppearanceUpdate()
 			 setNeedsUpdateOfHomeIndicatorAutoHidden()
 
-			 let tapToFlip = UITapGestureRecognizer(target: self, action: #selector(flipView))
-			 tapToFlip.numberOfTapsRequired = 2
-			 view.addGestureRecognizer(tapToFlip)
+			 checkSettings()
 	  }
 
-	  func checkSelfieSetting() {
-			 if UserDefaults.standard.bool(forKey: "selfie_preference") {
+	  func checkSettings() {
+
+			 holdToCapturePhoto = UILongPressGestureRecognizer(target: self, action: #selector(capturePhoto))
+			 doubleTapToFlipImage = UITapGestureRecognizer(target: self, action: #selector(flipView))
+
+			 if UserDefaults.standard.bool(forKey: "selfies_enabled") {
+					holdToCapturePhoto.require(toFail: doubleTapToFlipImage)
 					view.addGestureRecognizer(holdToCapturePhoto)
-			 } else {
-					view.removeGestureRecognizer(holdToCapturePhoto)
-			 }
+			 } else { view.removeGestureRecognizer(holdToCapturePhoto) }
+
+			 if UserDefaults.standard.bool(forKey: "flip_enabled") {
+					doubleTapToFlipImage!.numberOfTapsRequired = 2
+					view.addGestureRecognizer(doubleTapToFlipImage)
+			 } else { view.removeGestureRecognizer(doubleTapToFlipImage) }
 	  }
 
 	  @objc private func flipView() {
-			 view.transform = viewIsFlipped ? CGAffineTransform(scaleX: 1, y: 1) : CGAffineTransform(scaleX: -1, y: 1)
+			 // view.transform = viewIsFlipped ? CGAffineTransform(scaleX: 1, y: 1) : CGAffineTransform(scaleX: -1, y: 1)
 
-			 /* let session = self.frontCamSession
-			 session.connections.first?.isVideoMirrored = viewIsFlipped ? true : false */
+			 view.transform = CGAffineTransform(scaleX: -1, y: 1)
 
-			 viewIsFlipped = viewIsFlipped ? false : true
+			 // viewIsFlipped = viewIsFlipped ? false : true
 	  }
 
 	  @objc private func capturePhoto(_ sender: UILongPressGestureRecognizer!) {
@@ -116,15 +121,6 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 let image = photo.cgImageRepresentation()!
 			 let uiImage = UIImage(cgImage: image, scale: 1.0, orientation: (viewIsFlipped ? .right : .leftMirrored))
 			 UIImageWriteToSavedPhotosAlbum(uiImage, nil, nil, nil)
-
-			 /* PHPhotoLibrary.requestAuthorization { status in
-					guard status == .authorized else { return }
-
-					PHPhotoLibrary.shared().performChanges({
-						  let creationRequest = PHAssetCreationRequest.forAsset()
-						  creationRequest.addResource(with: .photo, data: photo.fileDataRepresentation()!, options: nil)
-					}, completionHandler: nil)
-			 } */
 	  }
 
 
@@ -171,12 +167,13 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
 			 }
 	  }
 
-	  public func blur(_ blur: Bool) {
-			 if blur {
-					self.blurView.alpha = 1
+	  public func blur(_ blur: Bool, animated: Bool = false) {
+
+			 if !animated {
+					blurView.alpha = blur ? 1 : 0
 			 } else {
-					UIView.animate(withDuration: 0.4, animations: {
-						  self.blurView.alpha =	0
+					UIView.animate(withDuration: 0.84, animations: {
+						  self.blurView.alpha =	blur ? 1 : 0
 					})
 			 }
 	  }

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5619F7F127C5819C00387402"
-               BuildableName = "Spiegeltje.app"
+               BuildableName = "Spiegel.app"
                BlueprintName = "Spiegel"
                ReferencedContainer = "container:Spiegel.xcodeproj">
             </BuildableReference>
@@ -45,7 +45,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5619F7F127C5819C00387402"
-            BuildableName = "Spiegeltje.app"
+            BuildableName = "Spiegel.app"
             BlueprintName = "Spiegel"
             ReferencedContainer = "container:Spiegel.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5619F7F127C5819C00387402"
-            BuildableName = "Spiegeltje.app"
+            BuildableName = "Spiegel.app"
             BlueprintName = "Spiegel"
             ReferencedContainer = "container:Spiegel.xcodeproj">
          </BuildableReference>

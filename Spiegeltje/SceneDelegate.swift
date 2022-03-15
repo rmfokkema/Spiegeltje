@@ -10,25 +10,26 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 	  var window: UIWindow?
-	  var rootVC: ViewController!
+	  var vc: ViewController!
 
 	  func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
 			 guard let _ = (scene as? UIWindowScene) else { return }
 
-			 rootVC = window?.rootViewController as? ViewController
+			 vc = window?.rootViewController as? ViewController
 	  }
+
+	  func sceneWillResignActive(_ scene: UIScene) { vc.blur(true, animated: true) }
 
 	  func sceneDidDisconnect(_ scene: UIScene) {}
 
 	  func sceneDidBecomeActive(_ scene: UIScene) {
-			 rootVC.blur(false)
-			 rootVC.checkSelfieSetting()
+			 vc.blur(false)
+
+			 vc.checkSettings()
 	  }
 
 	  func sceneWillEnterForeground(_ scene: UIScene) {}
 
-	  func sceneDidEnterBackground(_ scene: UIScene) {
-			 rootVC.blur(true)
-	  }
+	  func sceneDidEnterBackground(_ scene: UIScene) { vc.blur(true, animated: false) }
 }
 

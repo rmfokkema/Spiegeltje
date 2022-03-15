@@ -10,9 +10,19 @@
 			<key>Type</key>
 			<string>PSToggleSwitchSpecifier</string>
 			<key>Title</key>
+			<string>doubleTapToFlipImage</string>
+			<key>Key</key>
+			<string>flip_enabled</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
 			<string>pressAndHoldToTakeSelfie</string>
 			<key>Key</key>
-			<string>selfie_preference</string>
+			<string>selfies_enabled</string>
 			<key>DefaultValue</key>
 			<true/>
 		</dict>

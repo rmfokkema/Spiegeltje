@@ -11,8 +11,9 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
 	func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-	  UserDefaults.standard.register(defaults: ["selfie_preference" : true])
-	  return true
+		  UserDefaults.standard.register(defaults: ["flip_enabled" : true, "selfies_enabled" : true ])
+		  UIApplication.shared.isIdleTimerDisabled = true
+		  return true
 	}
 
 	// MARK: UISceneSession Lifecycle
